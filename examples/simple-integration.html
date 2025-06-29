@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh Integrasi API Video Downloader</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .result-card {
+            transition: all 0.3s ease;
+        }
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .download-btn {
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fas fa-video me-2"></i>
+                            Video Downloader
+                        </h3>
+                        <small>Download video dari YouTube, TikTok, dan Instagram</small>
+                    </div>
+                    <div class="card-body">
+                        <form id="downloadForm">
+                            <div class="mb-3">
+                                <label for="videoUrl" class="form-label">
+                                    <i class="fas fa-link me-1"></i>
+                                    URL Video
+                                </label>
+                                <div class="input-group">
+                                    <input 
+                                        type="url" 
+                                        class="form-control form-control-lg" 
+                                        id="videoUrl" 
+                                        placeholder="Masukkan link video YouTube, TikTok, atau Instagram"
+                                        required
+                                    >
+                                    <button class="btn btn-outline-secondary" type="button" id="validateBtn">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Pastikan URL valid dari platform yang didukung
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="quality" class="form-label">
+                                    <i class="fas fa-cog me-1"></i>
+                                    Kualitas Video
+                                </label>
+                                <select class="form-select" id="quality">
+                                    <option value="best">Terbaik (Best)</option>
+                                    <option value="720p">HD 720p</option>
+                                    <option value="480p">SD 480p</option>
+                                    <option value="360p">SD 360p</option>
+                                    <option value="240p">240p</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-download me-2"></i>
+                                    Download Video
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Loading State -->
+                        <div id="loadingState" class="text-center py-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Sedang memproses video...</p>
+                        </div>
+                        
+                        <!-- Result -->
+                        <div id="resultContainer" class="mt-4 d-none">
+                            <div class="card result-card">
+                                <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <img id="videoThumbnail" src="" class="img-fluid rounded-start h-100 object-fit-cover" alt="Video Thumbnail">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title" id="videoTitle"></h5>
+                                            <p class="card-text">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-user me-1"></i>
+                                                    <span id="videoUploader"></span>
+                                                    <i class="fas fa-clock ms-3 me-1"></i>
+                                                    <span id="videoDuration"></span>
+                                                    <i class="fas fa-eye ms-3 me-1"></i>
+                                                    <span id="videoViews"></span>
+                                                </small>
+                                            </p>
+                                            <div class="d-grid gap-2">
+                                                <a href="#" id="downloadLink" class="btn btn-success download-btn" target="_blank">
+                                                    <i class="fas fa-download me-2"></i>
+                                                    Download Video
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Error State -->
+                        <div id="errorContainer" class="mt-4 d-none">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span id="errorMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Supported Platforms -->
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-globe me-2"></i>
+                            Platform yang Didukung
+                        </h6>
+                        <div class="row">
+                            <div class="col-4 text-center">
+                                <i class="fab fa-youtube text-danger fa-2x"></i>
+                                <div class="small mt-1">YouTube</div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <i class="fab fa-tiktok text-dark fa-2x"></i>
+                                <div class="small mt-1">TikTok</div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <i class="fab fa-instagram text-primary fa-2x"></i>
+                                <div class="small mt-1">Instagram</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Konfigurasi API
+        const API_BASE_URL = 'http://localhost:5000'; // Ganti dengan URL API Anda
+        
+        class SimpleVideoDownloader {
+            constructor(baseUrl) {
+                this.baseUrl = baseUrl;
+                this.initializeEventHandlers();
+            }
+            
+            initializeEventHandlers() {
+                document.getElementById('validateBtn').addEventListener('click', () => this.validateUrl());
+                document.getElementById('downloadForm').addEventListener('submit', (e) => this.handleDownload(e));
+            }
+            
+            showLoading() {
+                document.getElementById('loadingState').classList.remove('d-none');
+                document.getElementById('resultContainer').classList.add('d-none');
+                document.getElementById('errorContainer').classList.add('d-none');
+            }
+            
+            hideLoading() {
+                document.getElementById('loadingState').classList.add('d-none');
+            }
+            
+            showError(message) {
+                this.hideLoading();
+                document.getElementById('errorMessage').textContent = message;
+                document.getElementById('errorContainer').classList.remove('d-none');
+                document.getElementById('resultContainer').classList.add('d-none');
+            }
+            
+            showResult(data) {
+                this.hideLoading();
+                
+                // Update thumbnail
+                const thumbnail = document.getElementById('videoThumbnail');
+                thumbnail.src = data.thumbnail || 'https://via.placeholder.com/300x200?text=No+Image';
+                thumbnail.alt = data.title;
+                
+                // Update video info
+                document.getElementById('videoTitle').textContent = data.title || 'Judul tidak tersedia';
+                document.getElementById('videoUploader').textContent = data.uploader || 'Unknown';
+                document.getElementById('videoDuration').textContent = data.duration_string || '00:00';
+                document.getElementById('videoViews').textContent = this.formatNumber(data.view_count) || '0';
+                
+                // Update download link
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = data.download_url;
+                downloadLink.textContent = `Download ${data.file_extension?.toUpperCase() || 'VIDEO'} (${this.formatFileSize(data.file_size)})`;
+                
+                document.getElementById('resultContainer').classList.remove('d-none');
+                document.getElementById('errorContainer').classList.add('d-none');
+            }
+            
+            async validateUrl() {
+                const url = document.getElementById('videoUrl').value.trim();
+                if (!url) {
+                    this.showError('Masukkan URL video terlebih dahulu');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${this.baseUrl}/api/video/validate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.valid) {
+                        alert(`✅ URL valid! Platform: ${result.platform?.toUpperCase()}`);
+                    } else {
+                        this.showError('URL tidak valid atau platform tidak didukung');
+                    }
+                } catch (error) {
+                    this.showError('Gagal memvalidasi URL');
+                }
+            }
+            
+            async handleDownload(e) {
+                e.preventDefault();
+                
+                const url = document.getElementById('videoUrl').value.trim();
+                const quality = document.getElementById('quality').value;
+                
+                if (!url) {
+                    this.showError('Masukkan URL video terlebih dahulu');
+                    return;
+                }
+                
+                this.showLoading();
+                
+                try {
+                    // Get video info first
+                    const infoResponse = await fetch(`${this.baseUrl}/api/video/info`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url })
+                    });
+                    
+                    const infoResult = await infoResponse.json();
+                    
+                    if (!infoResponse.ok) {
+                        throw new Error(infoResult.message || 'Gagal mendapatkan info video');
+                    }
+                    
+                    // Get download link
+                    const downloadResponse = await fetch(`${this.baseUrl}/api/video/download`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, quality })
+                    });
+                    
+                    const downloadResult = await downloadResponse.json();
+                    
+                    if (!downloadResponse.ok) {
+                        throw new Error(downloadResult.message || 'Gagal mendapatkan link download');
+                    }
+                    
+                    // Combine data and show result
+                    const combinedData = {
+                        ...infoResult.data,
+                        ...downloadResult.data
+                    };
+                    
+                    this.showResult(combinedData);
+                    
+                } catch (error) {
+                    this.showError(error.message || 'Terjadi kesalahan saat memproses video');
+                }
+            }
+            
+            formatNumber(num) {
+                if (!num) return '0';
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+                return num.toString();
+            }
+            
+            formatFileSize(bytes) {
+                if (!bytes) return 'Unknown';
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(1024));
+                return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+            }
+        }
+        
+        // Initialize the app
+        const downloader = new SimpleVideoDownloader(API_BASE_URL);
+        
+        // Add some example URLs
+        const exampleUrls = [
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'https://youtu.be/dQw4w9WgXcQ'
+        ];
+        
+        // Rotate placeholder examples
+        let currentExample = 0;
+        const urlInput = document.getElementById('videoUrl');
+        setInterval(() => {
+            if (!urlInput.value) {
+                urlInput.placeholder = `Contoh: ${exampleUrls[currentExample]}`;
+                currentExample = (currentExample + 1) % exampleUrls.length;
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
