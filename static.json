@@ -1,0 +1,17 @@
+"root": "RestApi",
+
+"clean_urls": true,
+
+"https_only": true,
+
+"error_page": "templates/index.html",
+
+"headers": {
+
+"/**": {
+
+"Access-Control-Allow-Origin":
+
+}
+
+}
