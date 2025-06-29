@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader API</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .code-block {
+            background-color: var(--bs-dark);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        .endpoint-card {
+            border-left: 4px solid var(--bs-primary);
+        }
+        .response-area {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-video text-primary"></i>
+                    Video Downloader API
+                </h1>
+                <p class="lead">REST API for downloading videos from YouTube, TikTok, and Instagram</p>
+            </div>
+        </div>
+
+        <!-- API Testing Interface -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-play-circle"></i>
+                            Test API
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="testForm">
+                            <div class="mb-3">
+                                <label for="videoUrl" class="form-label">Video URL</label>
+                                <input type="url" class="form-control" id="videoUrl" 
+                                       placeholder="Enter YouTube, TikTok, or Instagram video URL"
+                                       required>
+                                <div class="form-text">
+                                    Supported platforms: YouTube, TikTok, Instagram
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="quality" class="form-label">Quality (for download)</label>
+                                <select class="form-select" id="quality">
+                                    <option value="best">Best Available</option>
+                                    <option value="720p">720p</option>
+                                    <option value="480p">480p</option>
+                                    <option value="360p">360p</option>
+                                    <option value="240p">240p</option>
+                                    <option value="worst">Worst Available</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="button" class="btn btn-outline-primary" id="getInfoBtn">
+                                    <i class="fas fa-info-circle"></i>
+                                    Get Video Info
+                                </button>
+                                <button type="button" class="btn btn-primary" id="getDownloadBtn">
+                                    <i class="fas fa-download"></i>
+                                    Get Download Link
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-4">
+                            <h5>Response:</h5>
+                            <div class="code-block response-area" id="responseArea">
+                                <em class="text-muted">Response will appear here...</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Documentation -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="fas fa-book"></i>
+                    API Documentation
+                </h2>
+            </div>
+        </div>
+
+        <!-- Get Video Info Endpoint -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card endpoint-card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <span class="badge bg-info me-2">POST</span>
+                            /api/video/info
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Get video metadata without downloading the video.</p>
+                        
+                        <h6>Request Body:</h6>
+                        <div class="code-block mb-3">
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+}
+                        </div>
+                        
+                        <h6>Response:</h6>
+                        <div class="code-block">
+{
+  "success": true,
+  "platform": "youtube",
+  "data": {
+    "title": "Video Title",
+    "description": "Video description...",
+    "duration": 212,
+    "duration_string": "03:32",
+    "thumbnail": "https://thumbnail-url.jpg",
+    "uploader": "Channel Name",
+    "upload_date": "20231225",
+    "view_count": 1000000,
+    "like_count": 50000,
+    "webpage_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "video_id": "dQw4w9WgXcQ",
+    "platform": "youtube",
+    "formats": [...]
+  }
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Get Download Link Endpoint -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card endpoint-card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <span class="badge bg-success me-2">POST</span>
+                            /api/video/download
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Get download link for the video.</p>
+                        
+                        <h6>Request Body:</h6>
+                        <div class="code-block mb-3">
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "quality": "720p"
+}
+                        </div>
+                        
+                        <h6>Response:</h6>
+                        <div class="code-block">
+{
+  "success": true,
+  "platform": "youtube",
+  "data": {
+    "title": "Video Title",
+    "download_url": "https://direct-download-url.mp4",
+    "file_extension": "mp4",
+    "file_size": 15728640,
+    "quality": "720p",
+    "format_id": "22",
+    "resolution": "1280x720",
+    "fps": 30,
+    "duration": 212,
+    "thumbnail": "https://thumbnail-url.jpg",
+    "platform": "youtube"
+  }
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Check Endpoint -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card endpoint-card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <span class="badge bg-secondary me-2">GET</span>
+                            /api/health
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p>Check API health status.</p>
+                        
+                        <h6>Response:</h6>
+                        <div class="code-block">
+{
+  "status": "healthy",
+  "timestamp": 1703548800,
+  "service": "Video Downloader API"
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Responses -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                            Error Responses
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <h6>Rate Limit Exceeded (429):</h6>
+                        <div class="code-block mb-3">
+{
+  "error": "Rate limit exceeded",
+  "message": "Too many requests. Please wait before making another request."
+}
+                        </div>
+                        
+                        <h6>Invalid URL (400):</h6>
+                        <div class="code-block mb-3">
+{
+  "error": "Unsupported platform",
+  "message": "URL must be from YouTube, TikTok, or Instagram"
+}
+                        </div>
+                        
+                        <h6>Video Not Found (404):</h6>
+                        <div class="code-block">
+{
+  "error": "Video not found",
+  "message": "Could not retrieve video information. The video may be private or unavailable."
+}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rate Limiting Info -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-tachometer-alt text-info"></i>
+                            Rate Limiting
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p>To prevent abuse, the API implements rate limiting:</p>
+                        <ul>
+                            <li><strong>Limit:</strong> 10 requests per minute per IP address</li>
+                            <li><strong>Window:</strong> 60 seconds rolling window</li>
+                            <li><strong>Response:</strong> HTTP 429 when limit is exceeded</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supported Platforms -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-globe text-success"></i>
+                            Supported Platforms
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fab fa-youtube text-danger fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">YouTube</h6>
+                                        <small class="text-muted">youtube.com, youtu.be</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fab fa-tiktok text-dark fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">TikTok</h6>
+                                        <small class="text-muted">tiktok.com, vm.tiktok.com</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fab fa-instagram text-danger fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Instagram</h6>
+                                        <small class="text-muted">instagram.com</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/api-test.js') }}"></script>
+</body>
+</html>
